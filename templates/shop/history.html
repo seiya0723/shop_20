@@ -1,0 +1,43 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+
+
+{% block extra_head %}
+
+
+{% endblock %}
+
+
+{% block main %}
+
+
+
+{% for h in history_list %}
+
+{% if h.histories %}
+<div class="border">
+    <div>{{ h.date }}</div>
+
+    <ul>
+        {% for history in h.histories %}
+        <li>{{ history.product.name }}</li>
+        {% endfor %}
+    </ul>
+
+</div>
+{% endif %}
+
+{% endfor %}
+
+
+{% for history in histories %}
+<div class="border">
+    <div>{{ history.date }}</div>
+    <div>{{ history.product.name }}</div>
+</div>
+{% endfor %}
+
+
+{% endblock %}
+

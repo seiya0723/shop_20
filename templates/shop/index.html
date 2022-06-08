@@ -1,0 +1,131 @@
+{% extends "common/base.html" %}
+{% load param_change %}
+{% load static %}
+
+
+{% block extra_head %}
+
+<script src="{% static 'shop/js/url_replace.js' %}"></script>
+{% endblock %}
+
+
+{% block main %}
+
+<a href="{% url 'shop:cart' %}">カートを見る</a>
+<a href="{% url 'shop:order_history' %}">注文履歴</a>
+
+<a href="{% url 'shop:ranking' %}">ランキング</a>
+
+<a href="{% url 'shop:analyse' %}">売上情報</a>
+<a href="{% url 'shop:history' %}">閲覧履歴</a>
+
+
+{# TODO:パラメータの両立とフォームの分離 #}
+<form action="" method="GET">
+    <select name="order_by">
+        <option value="">並び替え</option>
+        {% for choice in choices %}
+        <option value="{{ choice.value }}" {% if request.GET.order_by == choice.value %}selected{% endif %}>{{ choice.label }}</option>
+        {% endfor %}
+    </select>
+
+    {# TODO:ここはEnterキーを押したらパラメータのJSを実行する。 #}
+    <input type="text" name="search" placeholder="キーワード検索" value="{{ request.GET.search }}">
+    <input type="submit" value="並び替え">
+</form>
+
+<div class="row mx-0">
+    {% for product in products %}
+    <div class="border col-3">
+        <div><a href="{% url 'shop:product' product.id %}">{{ product.name }}</a></div>
+        <div>{{ product.price }}円</div>
+        <div>在庫数:{{ product.stock }}個</div>
+        {# <div>レビュー平均点 ( {{ product.avg_star|default:"-" }}点 )</div> #}
+
+        <div class="product_avg_star_icon">
+            {% with range=''|center:product.avg_star  %}
+            {% for x in range %}<i class="fas fa-star"></i>{% endfor %}
+            {% endwith %}
+            {% if product.avg_star_few == 1 %}<i class="fas fa-star"></i>{% elif product.avg_star_few == 0.5 %}<i class="fas fa-star-half"></i>{% endif %}
+        </div>
+        <div class="product_review_count">( {{ product.amount_comments }} )</div>
+
+
+        <form action="{% url 'shop:product' product.id %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="amount" value="1">
+            <input class="btn btn-outline-success" type="submit" value="カートに入れる">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<ul class="pagination justify-content-center">
+    {% if products.has_previous %}
+    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' '1' %}">最初のページ</a></li>
+    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' products.previous_page_number %}">前のページ</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link">最初のページ</a></li>
+    <li class="page-item"><a class="page-link">前のページ</a></li>
+    {% endif %}
+    <li class="page-item"><a class="page-link">{{ products.number }}</a></li>
+    {% if products.has_next %}
+    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' products.next_page_number %}">次のページ</a></li>
+    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' products.paginator.num_pages %}">最後のページ</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link">次のページ</a></li>
+    <li class="page-item"><a class="page-link">最後のページ</a></li>
+    {% endif %}
+
+</ul>
+
+{# ここで金額の上限と下限を指定 #}
+
+{# TODO: Amazonのように 0-1500円、1500円-5000円などのように表現したい場合、カスタムテンプレートタグを新たに作る必要がある。 #}
+
+
+
+<h2>価格帯</h2>
+
+<div><a href="?{% url_replace_w request 'min_price' 0 'max_price' 1500     %}">0-1500円</a></div>
+<div><a href="?{% url_replace_w request 'min_price' 1500 'max_price' 5000  %}">1500-5000円</a></div>
+
+
+
+{% comment %}
+
+<h2>下限</h2>
+
+<div>
+    <a href="?{% url_replace request 'min_price' 500   %}">500~</a>
+    <a href="?{% url_replace request 'min_price' 1000  %}">1000~</a>
+    <a href="?{% url_replace request 'min_price' 5000  %}">5000~</a>
+    <a href="?{% url_replace request 'min_price' 10000 %}">10000~</a>
+    <a href="?{% url_replace request 'min_price' 50000 %}">50000~</a>
+</div>
+
+{# ?min_price=1000&max_price=10000 #}
+
+<input type="text" name="min_price" value="{{ request.GET.min_price }}">
+
+<h2>上限</h2>
+
+<div>
+    <a href="?{% url_replace request 'max_price' 500   %}">~500</a>
+    <a href="?{% url_replace request 'max_price' 1000  %}">~1000</a>
+    <a href="?{% url_replace request 'max_price' 5000  %}">~5000</a>
+    <a href="?{% url_replace request 'max_price' 10000 %}">~10000</a>
+    <a href="?{% url_replace request 'max_price' 50000 %}">~50000</a>
+</div>
+
+<input type="text" name="max_price" value="{{ request.GET.max_price }}">
+
+{% endcomment %}
+
+<!--
+    ここに『在庫あり』などで絞り込み
+    『レビューの星の数』『メーカー』『新商品(発売から30日以内)』『タイムセール』など
+-->
+
+{% endblock %}
+

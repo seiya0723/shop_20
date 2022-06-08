@@ -1,0 +1,86 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+
+
+{% block extra_head %}
+
+<link rel="stylesheet" href="{% static 'shop/css/ranking.css' %}">
+<script src="{% static 'shop/js/ranking.js' %}"></script>
+
+
+{% endblock %}
+
+
+{% block main %}
+
+    <div>30日間</div>
+
+
+    <div class="preview_control_area">
+        <div class="control_button previous_button">Prev</div>
+        <div class="data_preview_area">
+            {% for rank in day_90_ranks  %}
+            <div class="data_preview_frame">
+                <div class="data_preview_content">
+                    <div>{{ forloop.counter }} 位</div>
+                    <a href="{% url 'shop:product' rank.product.id %}">
+
+                        {% if rank.product.img %}
+                        <div><img src="{{ rank.product.img.url }}" alt=""></div>
+                        {% endif %}
+
+                        <div>{{ rank.product.name }}</div>
+                        <div>売れた数 {{ rank.amount }}個</div>
+                        <div>レビュー数 {{ rank.product.amount_comments }}件</div>
+                        <div>レビュー平均点 {{ rank.product.avg_star }} 点</div>
+                        <div>総合点 {{ rank.score }} 点</div>
+                    
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="control_button next_button">Next</div>
+    </div>
+
+
+
+
+
+    {% for rank in day_30_ranks  %}
+    <div class="border">
+        <div>{{ forloop.counter }} 位</div>
+        <div>{{ rank.product.name }}</div>
+        <div>売れた数 {{ rank.amount }}個</div>
+        <div>レビュー数 {{ rank.product.amount_comments }}件</div>
+        <div>レビュー平均点 {{ rank.product.avg_star }} 点</div>
+        <div>総合点 {{ rank.score }} 点</div>
+    </div>
+    {% endfor %}
+
+    <div>90日間</div>
+    {% for rank in day_90_ranks  %}
+    <div class="border">
+        <div>{{ forloop.counter }} 位</div>
+        <div>{{ rank.product.name }}</div>
+        <div>売れた数 {{ rank.amount }}個</div>
+        <div>レビュー数 {{ rank.product.amount_comments }}件</div>
+        <div>レビュー平均点 {{ rank.product.avg_star }} 点</div>
+        <div>総合点 {{ rank.score }} 点</div>
+    </div>
+    {% endfor %}
+
+    <div>365日間</div>
+    {% for rank in day_365_ranks %}
+    <div class="border">
+        <div>{{ forloop.counter }} 位</div>
+        <div>{{ rank.product.name }}</div>
+        <div>売れた数 {{ rank.amount }}個</div>
+        <div>レビュー数 {{ rank.product.amount_comments }}件</div>
+        <div>レビュー平均点 {{ rank.product.avg_star }} 点</div>
+        <div>総合点 {{ rank.score }} 点</div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

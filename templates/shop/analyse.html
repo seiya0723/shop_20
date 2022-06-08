@@ -1,0 +1,61 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+<script src="{% static 'shop/js/analyse.js' %}"></script>
+{% endblock %}
+
+
+
+{% block main %}
+
+
+<h2>月ごとの売上データ</h2>
+
+
+{# ここで年を指定できるようにする。 #}
+<form action="">
+    <select name="year">
+        <option value="">未指定</option>
+        {% for y in years %}
+        {# TODO:DTLのif文は型までチェックしているので、yが数値型、request.GETは文字列なので、yを文字列に直しておかなければifは正常に発動しない #}
+        <option value="{{ y }}" {% if y == request.GET.year %}selected{% endif %}>{{ y }}年</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="対象年を表示">
+</form>
+
+
+
+<table class="table">
+
+    <tr>
+        <td>対象月</td>
+        <td>売上</td>
+        <td>売上回数</td>
+    </tr>
+    
+    {% for m in monthly %}
+    <tr>
+        <td class="month">{{ m.monthly_dt|date:"n月" }}</td>
+        <td class="amount">{{ m.monthly_amount }}円</td>
+        <td class="count">{{ m.count }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{# 高さと幅の調整をする時、下記のようにstyle属性に指定しないと発動しない。 #}
+{# 参照: https://noauto-nolife.com/post/chartjs-responsive-chart/ #}
+<div style="position:relative;width:800px;height:800px;">
+    <canvas id="monthly_graph"></canvas>
+</div>
+
+
+
+
+{% endblock %}
+
+

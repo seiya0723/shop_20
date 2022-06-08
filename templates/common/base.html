@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>ElementShop</title>
+
+    {# TODO:Bootstrapは段階的に排除#}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous">
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    {# TODO:個別にCSSを配置するのであれば、このファイル名では混乱する。static/common/css/base.css という名前に仕立てる。(他のページには読まれないようにする) #}
+    {# TODO:星のレビューが含まれている。 #}
+    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'common/css/base.css' %}">
+
+<style>
+
+{% for category_parent in SIDEBAR.category_parents %}
+input[type="checkbox"]#category_{{ category_parent.id }}:checked ~ #category_area_{{category_parent.id }}{ display:block; }
+{% endfor %}
+
+</style>
+
+
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+<body>
+
+    {# <h1 class="bg-primary"><a class="text-white" href="{% url 'shop:index' %}">ElementShop</a></h1> #}
+
+    <header>
+        <input id="l_sidebar" class="l_sidebar_button" type="checkbox">
+
+        <div class="left_header">
+            <label class="l_sidebar_label" for="l_sidebar">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </label>
+            <a class="header_link" href="{% url 'shop:index' %}"><h1>ElementShop</h1></a>
+            <div class="header_right_content">
+
+                {# TODO:認証などのボタンを配置する #}
+
+            </div>
+        </div>
+
+        <div class="l_sidebar_menu">
+
+            {% comment %}
+            {# 親カテゴリから全データを取り出す。範囲をホバーしたら親カテゴリに所属する全カテゴリを表示 #}
+            {% for category_parent in SIDEBAR.category_parents %}
+            <div class="sidebar_category_parent">
+                <div class="sidebar_category_parent_inner">{{ category_parent.name }}</div>
+            </div>
+            <div class="sidebar_category_area">
+                {% for category in category_parent.categories %}
+                <div class="sidebar_category">{{ category.name }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% endcomment %}
+
+
+            {% for category_parent in SIDEBAR.category_parents %}
+            <input id="category_{{ category_parent.id }}" type="checkbox" style="display:none;">
+            <div class="sidebar_category_parent">
+                <label class="sidebar_category_parent_inner" for="category_{{ category_parent.id }}" style="display:block">{{ category_parent.name }}</label>
+            </div>
+            <div id="category_area_{{ category_parent.id }}" class="sidebar_category_area">
+                <label class="sidebar_category" for="category_{{ category_parent.id }}" style="display:block;">戻る</label>
+
+                {% for category in category_parent.categories %}
+                <div class="sidebar_category">{{ category.name }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+
+
+
+
+
+        </div>
+
+        <label class="l_sidebar_closer" for="l_sidebar"></label>
+    </header>
+
+    <main>
+    {% block main %}
+    {% endblock %}
+    </main>
+
+</body>
+</html>
+
